@@ -1,0 +1,137 @@
+from django.db import models
+from enum import Enum
+import datetime
+
+
+class LedgerClosingTypes(Enum):
+    L = "left side"
+    R = "right side"
+    N = "none"
+
+class LedgerTypes(Enum):
+    OB = "opening balance" #oeffnungsbilanz
+    AA = "active account" #aktivkonto
+    PA = "passive account" #passivkonto
+    EA = "expense account" #aufwandskonto
+    IA = "income account" #ertragskonto
+    CB = "closing balance" #schlussbilanz
+    IS = "income statement" #erfolgsrechnung
+    XX = "none"
+
+class baseModel(models.Model):
+    created_on = models.DateTimeField(auto_now=True)
+    changed_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.changed_on = datetime.datetime.now()
+        super().save(*args, **kwargs)
+
+
+class SupportedLanguage(baseModel):
+    short = models.CharField(primary_key=True, max_length=2)
+    long = models.TextField(max_length=255)
+
+
+class Currency(baseModel):
+    name = models.TextField(max_length=3, primary_key=True)
+    longname = models.TextField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+
+class Ledger(baseModel):
+    name = models.TextField()
+    close_against = models.ForeignKey('self',
+                                      on_delete=models.CASCADE)
+    close_side = models.CharField(
+        max_length=1,
+        choices=[(str(lt).split('.')[1], lt.value) for lt in LedgerClosingTypes]  # Choices is a list of Tuple
+    )
+
+    ledger_type = models.CharField(
+        max_length=2,
+        choices=[(str(lt).split('.')[1], lt.value) for lt in LedgerTypes]  # Choices is a list of Tuple
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Vendor(baseModel):
+    name = models.TextField()
+    default_ledger = models.ForeignKey(to=Ledger,
+                                       on_delete=models.CASCADE,
+                                       null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class InvoiceHead(baseModel):
+    notes = models.TextField(primary_key=False, max_length=255, null=True, blank=True)
+    vendor = models.ForeignKey(to=Vendor, on_delete=models.CASCADE, null=True, blank=True)
+    image = models.ImageField(null=True, blank=True)
+    tryOCR = models.BooleanField(blank=True, default=False)
+    ocrText = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f'Invoice {self.pk} by {self.vendor} / Notes: {self.notes}'
+
+
+class MaterialGroup(baseModel):
+    groupName = models.TextField(max_length=255)
+
+    def __str__(self):
+        return f'{self.groupName} (material group)'
+
+
+class MaterialText(baseModel):
+    text = models.TextField()
+    language = models.ForeignKey(SupportedLanguage, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.text} (material text, language: {self.language})'
+
+
+class Material(baseModel):
+    name = models.TextField(max_length=255)
+    texts = models.ManyToManyField(MaterialText, blank=True)
+    group = models.ManyToManyField(MaterialGroup, blank=True)
+
+    def __str__(self):
+        return f'{self.name} (material, groups: {self.group.count()}, texts: {self.texts.count()})'
+
+
+class InvoicePosition(baseModel):
+    # materialType
+    amount = models.FloatField(null=True)
+    position = models.IntegerField(null=True, blank=True)
+    currency = models.ForeignKey(to=Currency, on_delete=models.CASCADE)
+    ledger = models.ForeignKey(to=Ledger,
+                               on_delete=models.CASCADE,
+                               related_name="invoiceItems")
+    head = models.ForeignKey(InvoiceHead,
+                             on_delete=models.CASCADE,
+                             related_name="positions")
+    lineText = models.TextField(max_length=255, null=True, blank=True)
+    materialGroup = models.ForeignKey(MaterialGroup, on_delete=models.CASCADE, null=True, blank=True)
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.position:
+            last_pos = self.head.positions.order_by('position').last()
+            if not last_pos or not last_pos.position:
+                self.position = 1
+            else:
+                self.position = last_pos.position + 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        ret_str = f'Invoice {self.head.pk}:{self.position} ({self.pk}) '
+        ret_str = ret_str + f'({self.head.vendor}): '
+        ret_str = ret_str + f'{self.amount} {self.currency.name}'
+        return ret_str

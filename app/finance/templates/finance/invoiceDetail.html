@@ -1,0 +1,52 @@
+{% extends "template.html" %}
+{% block style %}
+  .row:nth-child(even) {
+    background-color: rgba(0,0,0,.1);
+  }
+  .row:nth-child(odd) {
+    background-color: rgba(255,255,255);
+  }
+{% endblock %}
+{% block content %}
+  <p>Invoice balance: {{ selectedInvoice_balance }}<BR>
+     Vendor: {{ selectedInvoice.vendor.name }}<BR>
+    {% if selectedInvoice.image %}
+     Image:  {{ selectedInvoice.image.url }}
+    {% endif %}
+  </p>
+
+  <p>Invoice items:</p>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">Position</div>
+      <div class="col-sm">Amount</div>
+      <div class="col-sm">Currency</div>
+      <div class="col-sm">Material</div>
+      <div class="col-sm">Material Group</div>
+      <div class="col-sm">Item text</div>
+    </div>
+  {% for item in selectedInvoice.positions.all %}
+    <div class="row">
+      <div class="col-sm">
+        {{ item.position }}
+      </div>
+      <div class="col-sm">
+        {{ item.amount }}
+      </div>
+      <div class="col-sm">
+        {{ item.currency }}
+      </div>
+      <div class="col-sm">
+        {{ item.material.name }}
+      </div>
+      <div class="col-sm">
+        {{ item.materialGroup.name }}
+      </div>
+      <div class="col-sm">
+        {{ item.lineText }}
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <BR>
+{% endblock %}
