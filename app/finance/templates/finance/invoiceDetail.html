@@ -7,43 +7,49 @@
     background-color: rgba(255,255,255);
   }
 {% endblock %}
+{% block content_title %}
+Invoice {{ selectedInvoice.id }} - {% if editmode %}(EDIT){% else %}(VIEW){% endif %} - Details
+{% endblock %}
 {% block content %}
-  <p>Invoice balance: {{ selectedInvoice_balance }}<BR>
-     Vendor: {{ selectedInvoice.vendor.name }}<BR>
-    {% if selectedInvoice.image %}
-     Image:  {{ selectedInvoice.image.url }}
+<p><span class="font-weight-bold" {% if editmode %}contenteditable{% endif %}>Invoice balance:</span> {{ selectedInvoice_balance }}<BR>
+<span class="font-weight-bold" {% if editmode %}contenteditable{% endif %}>Vendor:</span> {{ selectedInvoice.vendor.name }}<BR>
+    {% if selectedInvoice.image or editmode%}
+<span class="font-weight-bold" {% if editmode %}contenteditable{% endif %}>Image:</span>  {{ selectedInvoice.image.url }}
     {% endif %}
   </p>
 
   <p>Invoice items:</p>
   <div class="container">
     <div class="row">
-      <div class="col-sm">Position</div>
-      <div class="col-sm">Amount</div>
-      <div class="col-sm">Currency</div>
-      <div class="col-sm">Material</div>
-      <div class="col-sm">Material Group</div>
-      <div class="col-sm">Item text</div>
+      <div class="col-sm-1 text-center font-weight-bold">Item</div>
+      <div class="col-sm-1 text-center font-weight-bold">Amount</div>
+      <div class="col-sm-1 text-center font-weight-bold">Price</div>
+      <div class="col-sm-1 text-center font-weight-bold">Currency</div>
+      <div class="col-sm font-weight-bold">Material/text (grp)</div>
     </div>
   {% for item in selectedInvoice.positions.all %}
     <div class="row">
-      <div class="col-sm">
+      <div class="col-sm-1 text-center ">
         {{ item.position }}
       </div>
-      <div class="col-sm">
-        {{ item.amount }}
+      <div class="col-sm-1 text-center">
+        {% if item.purchase_amount %}
+        {{ item.purchase_amount }}
+        {% else %}
+          (invalid)
+        {% endif %}
       </div>
-      <div class="col-sm">
+      <div class="col-sm-1 text-center">
+        {{ item.per_amount_price }}
+      </div>
+      <div class="col-sm-1 text-center">
         {{ item.currency }}
       </div>
       <div class="col-sm">
-        {{ item.material.name }}
-      </div>
-      <div class="col-sm">
-        {{ item.materialGroup.name }}
-      </div>
-      <div class="col-sm">
-        {{ item.lineText }}
+        {{ item.material.name }}{{ item.lineText }}
+        {% if item.materialGroup.name %}
+          ( {{ item.materialGroup.name }} )
+        {% endif %}
       </div>
     </div>
   {% endfor %}

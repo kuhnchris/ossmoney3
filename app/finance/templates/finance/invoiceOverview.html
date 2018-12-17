@@ -7,12 +7,18 @@
     background-color: rgba(255,255,255);
   }
 {% endblock %}
+{% block content_title %}
+Invoices - List
+{% endblock %}
 {% block content %}
-  <p>Invoices on system:</p>
-  <div class="container">
+<p>Invoices on system:</p><a href="new" class="btn btn-primary btn-sm active" role="button" aria-pressed="true">Add new invoice</a>
+<div class="container">
     <div class="row">
-      <div class="col-sm">Reference</div>
+      <div class="col-sm"></div>
     </div>
+  <div>
+    &nbsp;
+  </div>
   {% for item in invoices.all %}
     <div class="row">
       <div class="col-sm">

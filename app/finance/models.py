@@ -8,6 +8,7 @@ class LedgerClosingTypes(Enum):
     R = "right side"
     N = "none"
 
+
 class LedgerTypes(Enum):
     OB = "opening balance" #oeffnungsbilanz
     AA = "active account" #aktivkonto
@@ -17,6 +18,7 @@ class LedgerTypes(Enum):
     CB = "closing balance" #schlussbilanz
     IS = "income statement" #erfolgsrechnung
     XX = "none"
+
 
 class baseModel(models.Model):
     created_on = models.DateTimeField(auto_now=True)
@@ -62,13 +64,17 @@ class Ledger(baseModel):
 
 
 class Vendor(baseModel):
-    name = models.TextField()
+    short_name = models.TextField(max_length=128)
+    name = models.TextField(null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    contact_address = models.TextField(null=True, blank=True)
+
     default_ledger = models.ForeignKey(to=Ledger,
                                        on_delete=models.CASCADE,
                                        null=True)
 
     def __str__(self):
-        return self.name
+        return self.short_name
 
 
 class InvoiceHead(baseModel):
@@ -106,20 +112,45 @@ class Material(baseModel):
         return f'{self.name} (material, groups: {self.group.count()}, texts: {self.texts.count()})'
 
 
+class UOM(baseModel):
+    short_name = models.TextField(max_length=5)
+    long_name = models.TextField(max_length=255)
+
+    def __str__(self):
+        return f'{self.short_name} ({self.long_name})'
+
+
 class InvoicePosition(baseModel):
-    # materialType
-    amount = models.FloatField(null=True)
     position = models.IntegerField(null=True, blank=True)
-    currency = models.ForeignKey(to=Currency, on_delete=models.CASCADE)
+    per_amount_price = models.FloatField(null=True)
+    per_amount_price_unit = models.FloatField(null=True)
+    purchase_amount = models.FloatField(null=True)
+    lineText = models.TextField(max_length=255, null=True, blank=True)
+
+    unit_of_measure = models.ForeignKey(to=UOM,
+                                        on_delete=models.CASCADE,
+                                        null=True,
+                                        blank=True)
+
+    currency = models.ForeignKey(to=Currency,
+                                 on_delete=models.CASCADE)
+
     ledger = models.ForeignKey(to=Ledger,
                                on_delete=models.CASCADE,
                                related_name="invoiceItems")
+
     head = models.ForeignKey(InvoiceHead,
                              on_delete=models.CASCADE,
                              related_name="positions")
-    lineText = models.TextField(max_length=255, null=True, blank=True)
-    materialGroup = models.ForeignKey(MaterialGroup, on_delete=models.CASCADE, null=True, blank=True)
-    material = models.ForeignKey(Material, on_delete=models.CASCADE, null=True, blank=True)
+
+    materialGroup = models.ManyToManyField(MaterialGroup,
+                                           null=True,
+                                           blank=True)
+
+    material = models.ForeignKey(Material,
+                                 on_delete=models.CASCADE,
+                                 null=True,
+                                 blank=True)
 
     def save(self, *args, **kwargs):
         if not self.position:
