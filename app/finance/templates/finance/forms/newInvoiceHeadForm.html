@@ -1,0 +1,14 @@
+{% extends "template.html" %}
+{# Don't forget that one ! #}
+{% load static %}
+
+{% block content %}
+<form action="/invoices/add2" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <BR>
+    <input type="submit" value="Submit">
+</form>
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+{% endblock %}

@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
-from .models import Ledger, InvoiceHead, LedgerTypes, LedgerClosingTypes
+from django.http import HttpResponseRedirect
+from .models import Ledger, InvoiceHead, LedgerTypes, LedgerClosingTypes, Vendor
+from .forms import InvoiceHeadForm, InvoiceForm
+from dal import autocomplete
 
 
 def index(request):
@@ -55,3 +58,32 @@ def ledgerView(request, ledger_id):
                                'selectedLedger_balance': selectedLedger_balance,
                                'selectedLedger_ledgerType': selectedLedger_ledgerType
                                })
+
+def renderInvHeaderAddView(request):
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = InvoiceForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/invoices/')
+
+    else:
+        # form = InvoiceHeadForm()
+        form = InvoiceForm()
+
+    return render(request, 'finance/forms/newInvoiceHeadForm.html', {'form': form})
+
+
+class VendorAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        #if not self.request.user.is_authenticated():
+        #    return Vendor.objects.none()
+
+        qs = Vendor.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs

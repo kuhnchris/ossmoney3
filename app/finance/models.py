@@ -144,7 +144,6 @@ class InvoicePosition(baseModel):
                              related_name="positions")
 
     materialGroup = models.ManyToManyField(MaterialGroup,
-                                           null=True,
                                            blank=True)
 
     material = models.ForeignKey(Material,
@@ -164,5 +163,5 @@ class InvoicePosition(baseModel):
     def __str__(self):
         ret_str = f'Invoice {self.head.pk}:{self.position} ({self.pk}) '
         ret_str = ret_str + f'({self.head.vendor}): '
-        ret_str = ret_str + f'{self.amount} {self.currency.name}'
+        ret_str = ret_str + f'{self.per_amount_price} {self.currency.name}'
         return ret_str
