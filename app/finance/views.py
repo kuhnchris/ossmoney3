@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.http import HttpResponseRedirect
 from .models import Ledger, InvoiceHead, LedgerTypes, LedgerClosingTypes, Vendor
-from .forms import InvoiceHeadForm, InvoiceForm
+from .forms import InvoiceForm, InvoiceLineForm
 from dal import autocomplete
 
 
@@ -71,8 +71,8 @@ def renderInvHeaderAddView(request):
     else:
         # form = InvoiceHeadForm()
         form = InvoiceForm()
-
-    return render(request, 'finance/forms/newInvoiceHeadForm.html', {'form': form})
+        invLines = [InvoiceLineForm()]
+    return render(request, 'finance/forms/newInvoiceHeadForm.html', {'form': form, 'invLines': invLines})
 
 
 class VendorAutoComplete(autocomplete.Select2QuerySetView):
