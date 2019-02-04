@@ -16,7 +16,7 @@
         x=$('.hidden')[0];
         y=x.cloneNode(true);
         y.classList.remove("hidden");
-        x.parentElement.appendChild(y)
+        x.parentElement.insertBefore(y,$('.fa-plus-square')[0].parentElement.parentElement.parentElement);
     }
 </script>
 <form action="/invoices/add2" method="post">

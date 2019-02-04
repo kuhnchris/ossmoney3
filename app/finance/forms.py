@@ -13,7 +13,10 @@ class InvoiceForm(forms.ModelForm):
 
     class Meta:
         model = InvoiceHead
-        exclude = [ ]
+        exclude = []
+        widgets = {
+            'vendor': forms.TextInput()
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
