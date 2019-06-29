@@ -5,5 +5,5 @@
 ### If you'd like to help, fork and create something from that base
 
 
-This repository is mainly an educational repository to learn djangoÂ>=2.1..
+This repository is mainly an educational repository to learn django >= 2.1..
 

@@ -13,7 +13,7 @@ source venv/bin/activate
 ### Make virtual environment
 ```
 virtualenv venv
-source venv/bin7activate
+source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 

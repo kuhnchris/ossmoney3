@@ -1,7 +1,7 @@
 from django.db import models
 from enum import Enum
 import datetime
-
+from rest_framework import routers, serializers, viewsets
 
 class LedgerClosingTypes(Enum):
     L = "left side"
@@ -48,7 +48,8 @@ class Currency(baseModel):
 class Ledger(baseModel):
     name = models.TextField()
     close_against = models.ForeignKey('self',
-                                      on_delete=models.CASCADE)
+                                      on_delete=models.CASCADE,
+                                      blank=True, null=True)
     close_side = models.CharField(
         max_length=1,
         choices=[(str(lt).split('.')[1], lt.value) for lt in LedgerClosingTypes]  # Choices is a list of Tuple
@@ -165,3 +166,53 @@ class InvoicePosition(baseModel):
         ret_str = ret_str + f'({self.head.vendor}): '
         ret_str = ret_str + f'{self.per_amount_price} {self.currency.name}'
         return ret_str
+
+
+
+from rest_framework import serializers
+
+class baseModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = baseModel
+        fields = '__all__';
+class SupportedLanguageSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = SupportedLanguage
+        fields = '__all__';
+class CurrencySerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = Currency
+        fields = ('name','longname')
+class LedgerSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = Ledger
+        fields = '__all__';
+class VendorSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = Vendor
+        fields = '__all__';
+class InvoiceHeadSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = InvoiceHead
+        fields = '__all__';
+class MaterialGroupSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = MaterialGroup
+        fields = '__all__';
+class MaterialTextSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = MaterialText
+        fields = '__all__';
+class MaterialSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = Material
+        fields = '__all__';
+class UOMSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = UOM
+        fields = '__all__';
+class InvoicePositionSerializer(serializers.ModelSerializer ):
+    class Meta:
+        model = InvoicePosition
+        fields = '__all__';
+        

@@ -1,13 +1,16 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404
-from django.http import HttpResponseRedirect
-from .models import Ledger, InvoiceHead, LedgerTypes, LedgerClosingTypes, Vendor
-from .forms import InvoiceForm, InvoiceLineForm
 from dal import autocomplete
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from rest_framework import viewsets
+
+from .forms import InvoiceForm, InvoiceLineForm
+from .models import *
+from .models import (InvoiceHead, Ledger, LedgerClosingTypes, LedgerTypes,
+                     Vendor)
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return HttpResponseRedirect("/invoices")
 
 
 def templateViewReturn(request, templateUrl, templateContext):
@@ -87,3 +90,36 @@ class VendorAutoComplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__istartswith=self.q)
 
         return qs
+
+
+
+class SupportedLanguageViewSet(viewsets.ModelViewSet):
+    queryset = SupportedLanguage.objects.all()
+    serializer_class = SupportedLanguageSerializer
+class CurrencyViewSet(viewsets.ModelViewSet):
+    queryset = Currency.objects.all()
+    serializer_class = CurrencySerializer
+class LedgerViewSet(viewsets.ModelViewSet):
+    queryset = Ledger.objects.all()
+    serializer_class = LedgerSerializer
+class VendorViewSet(viewsets.ModelViewSet):
+    queryset = Vendor.objects.all()
+    serializer_class = VendorSerializer
+class InvoiceHeadViewSet(viewsets.ModelViewSet):
+    queryset = InvoiceHead.objects.all()
+    serializer_class = InvoiceHeadSerializer
+class MaterialGroupViewSet(viewsets.ModelViewSet):
+    queryset = MaterialGroup.objects.all()
+    serializer_class = MaterialGroupSerializer
+class MaterialTextViewSet(viewsets.ModelViewSet):
+    queryset = MaterialText.objects.all()
+    serializer_class = MaterialTextSerializer
+class MaterialViewSet(viewsets.ModelViewSet):
+    queryset = Material.objects.all()
+    serializer_class = MaterialSerializer
+class UOMViewSet(viewsets.ModelViewSet):
+    queryset = UOM.objects.all()
+    serializer_class = UOMSerializer
+class InvoicePositionViewSet(viewsets.ModelViewSet):
+    queryset = InvoicePosition.objects.all()
+    serializer_class = InvoicePositionSerializer
