@@ -19,6 +19,14 @@
         x.parentElement.insertBefore(y,$('.fa-plus-square')[0].parentElement.parentElement.parentElement);
     }
 </script>
+                    <div class="row hidden">
+                        <div class="col-2">{{ lineForm.ledger.errors }}{{ lineForm.ledger }}</div>
+                        <div class="col-2">{{ lineForm.material.errors }}{{ lineForm.material }}</div>
+                        <div class="col-2">{{ lineForm.purchase_amount.errors }}{{ lineForm.purchase_amount }}</div>
+                        <div class="col-2">{{ lineForm.unit_of_measure.errors }}{{ lineForm.unit_of_measure }}</div>
+                        <div class="col-2">{{ lineForm.per_amount_price.errors }}{{ lineForm.per_amount_price }}</div>
+                        <div class="col-2">{{ lineForm.currency.errors }}{{ lineForm.currency }}</div>
+                    </div>
 <form action="/invoices/add2" method="post">
     {% csrf_token %}
     <div class="container">
@@ -61,14 +69,7 @@
                         <div class="col-2">Price</div>
                         <div class="col-2">Currency</div>
                     </div>
-                    <div class="row hidden">
-                        <div class="col-2">{{ lineForm.ledger.errors }}{{ lineForm.ledger }}</div>
-                        <div class="col-2">{{ lineForm.material.errors }}{{ lineForm.material }}</div>
-                        <div class="col-2">{{ lineForm.purchase_amount.errors }}{{ lineForm.purchase_amount }}</div>
-                        <div class="col-2">{{ lineForm.unit_of_measure.errors }}{{ lineForm.unit_of_measure }}</div>
-                        <div class="col-2">{{ lineForm.per_amount_price.errors }}{{ lineForm.per_amount_price }}</div>
-                        <div class="col-2">{{ lineForm.currency.errors }}{{ lineForm.currency }}</div>
-                    </div>
+
                 {% endif %}
                 <div class="row">
                     <div class="col-2">{{ lineForm.ledger.errors }}{{ lineForm.ledger }}</div>
@@ -87,7 +88,7 @@
         <div class="row"><div class="col-12">{{ form.ocrText.errors }}{{ form.ocrText }}</div></div>
         <div class="row">
             <div class="col-12">
-                <input type="submit" class="btn btn-primary" value="Submit">
+                <input type="submit" class="btn btn-primary" value="Submit" novalidate>
             </div>
         </div>
         <div class="row"><div class="col-12">&nbsp;</div></div>

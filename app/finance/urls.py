@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from . import views
-from .views import VendorAutoComplete
+#from .views import VendorAutoComplete
 
 
 from rest_framework import routers
@@ -26,7 +26,7 @@ urlpatterns = [
     path('invoices/', views.invoiceOverview, name='invoiceOverview'),
     path('invoices/new', views.invoiceNew, name='invoiceNew'),
     path('invoices/add2', views.renderInvHeaderAddView, name='invoiceAdd2'),
-    path('autocomplete/vendor', VendorAutoComplete.as_view(create_field='short_name'), name="vendor-autocomplete"),
+ #   path('autocomplete/vendor', VendorAutoComplete.as_view(create_field='short_name'), name="vendor-autocomplete"),
     
     path('rest/', include(router.urls)),
     path('rest-api/', include('rest_framework.urls', namespace='rest_framework')),

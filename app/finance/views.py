@@ -19,12 +19,14 @@ def templateViewReturn(request, templateUrl, templateContext):
     context['ledgers'] = ledgers
     return render(request, templateUrl, context)
 
+
 def invoiceNew(request):
     selectedInvoice_balance = 0
     return templateViewReturn(request,
                               'finance/invoiceDetail.html',
                               {'editmode': True
                               })
+
 
 def invoiceView(request, invoice_id):
     selectedInvoice = InvoiceHead.objects.get(pk=invoice_id)
@@ -37,12 +39,12 @@ def invoiceView(request, invoice_id):
                                'selectedInvoice_balance':selectedInvoice_balance
                               })
 
+
 def invoiceOverview(request):
     invoices = InvoiceHead.objects.order_by('id')
     return templateViewReturn(request,
                               'finance/invoiceOverview.html',
                               {'invoices': invoices})
-
 
 
 def ledgerView(request, ledger_id):
@@ -63,6 +65,7 @@ def ledgerView(request, ledger_id):
                                })
 
 def renderInvHeaderAddView(request):
+    invLines = []
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = InvoiceForm(request.POST)
@@ -77,19 +80,6 @@ def renderInvHeaderAddView(request):
         invLines = [InvoiceLineForm()]
     return render(request, 'finance/forms/newInvoiceHeadForm.html', {'form': form, 'invLines': invLines})
 
-
-class VendorAutoComplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
-        #if not self.request.user.is_authenticated():
-        #    return Vendor.objects.none()
-
-        qs = Vendor.objects.all()
-
-        if self.q:
-            qs = qs.filter(name__istartswith=self.q)
-
-        return qs
 
 
 
