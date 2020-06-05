@@ -1,4 +1,4 @@
-Django==2.2.10
+Django==2.2.13
 django-autocomplete-light==3.3.2
 mccabe==0.6.1
 Pillow==6.2.0
